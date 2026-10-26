@@ -1,0 +1,3 @@
+/home/geant4/Hands_on_example/build/CMakeFiles/rebuild_cache.dir
+/home/geant4/Hands_on_example/build/CMakeFiles/edit_cache.dir
+/home/geant4/Hands_on_example/build/CMakeFiles/handsonexample.dir
