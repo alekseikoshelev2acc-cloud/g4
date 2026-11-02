@@ -9,12 +9,16 @@
 #include "G4Trd.hh"
 #include "G4Tubs.hh"
 #include "G4VisAttributes.hh"
+#include "G4OpticalSurface.hh"
+#include "G4LogicalSkinSurface.hh"
 #include "G4SDManager.hh"
 #include "iostream"
 #include "G4OpticalPhysics.hh"
 #include "G4Scintillation.hh"
 #include <cstdlib>
 #include <fstream>
+#include "G4OpticalSurface.hh"
+#include "G4LogicalSkinSurface.hh"
 #include <vector>
 
 using namespace std;
@@ -87,7 +91,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     //Declaring the optical proprieties table
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
-    
     //Adding material proprieties
     //refractive index
     mpt->AddProperty("RINDEX", photonEnergy, rindex);
@@ -141,7 +144,31 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     fLogicTarget = new G4LogicalVolume(solidTarget, target_mat, "TargetLV");
 
-    // Placement de la cible dans le World
+//Definition of the aluminium reflective surface
+G4OpticalSurface* reflector = new G4OpticalSurface("reflector");
+
+//Unifed model for interactions of optical photons at a surface
+reflector->SetModel(unified);
+reflector->SetFinish(polished);
+reflector->SetType(dielectric_metal);
+
+//Defining optical proprieties
+
+//Reflectivity is almost constant on our spectrum
+vector<G4double> reflectivity (photonEnergy.size(), 93);
+//Aluminium is opaque
+vector<G4double> efficiency (photonEnergy.size(), 0.);
+
+G4MaterialPropertiesTable* surfMPT = new G4MaterialPropertiesTable();
+surfMPT->AddProperty("REFLECTIVITY", photonEnergy, reflectivity);
+surfMPT->AddProperty("EFFICIENCY",   photonEnergy, efficiency);
+
+reflector->SetMaterialPropertiesTable(surfMPT);
+
+//Envellopping our scitillator
+new G4LogicalSkinSurface("TargetSkinSurface", fLogicTarget, reflector);
+
+    // Placement of target in World
     new G4PVPlacement(
         0,                     
         G4ThreeVector(0, 0, 0),  // center of the world

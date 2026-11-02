@@ -3,6 +3,8 @@
 #include "G4Event.hh"
 #include "G4SystemOfUnits.hh"
 
+using namespace std;
+
 EventAction::EventAction()
 	: G4UserEventAction(),
 	fTotalEdep(0.),
@@ -22,9 +24,8 @@ void EventAction::BeginOfEventAction(const G4Event*)
 void EventAction::EndOfEventAction(const G4Event*)
 {
 	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-
-	// Creating the data table
-	analysisManager->FillNtupleDColumn(0, fTotalEdep / MeV);          // Énergie en MeV
-	analysisManager->FillNtupleDColumn(1, fTotalTrackLength / cm);     // Longueur en cm
-	analysisManager->AddNtupleRow();
+	EventAction eventAction;
+	ofstream out("output.txt", ios::app);
+	out << fTotalEdep << " " << fTotalTrackLength << endl;
+    out.close();
 }

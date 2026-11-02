@@ -16,7 +16,6 @@ public:
     void AddEdep(G4double edep) { fTotalEdep += edep; }
     void AddTrackLength(G4double length) { fTotalTrackLength += length; }
 
-private:
     G4double fTotalEdep;
     G4double fTotalTrackLength;
 };

@@ -22,7 +22,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 	// Config of the particle
 	fParticleGun->SetParticleDefinition(particle);
 
-	// Config of the shooting direction
+	// Config of the shooting dirG4ection
 	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
 
 	// Config of the muon's energy
@@ -34,7 +34,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
-	// Libération de la mémoire du canon
+	// Memory reset
 	delete fParticleGun;
 }
 

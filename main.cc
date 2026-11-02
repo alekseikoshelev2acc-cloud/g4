@@ -4,15 +4,20 @@
 #include "G4UIExecutive.hh"
 #include "G4OpticalPhysics.hh"
 #include "G4Scintillation.hh"
+#include <fstream>
+#include <cstdlib>
 
 #include "FTFP_BERT.hh"
 
 #include "DetectorConstruction.hh"
 #include "ActionInitialization.hh"
 
+using namespace std;
+
 //arc and argv necessary for terminal execution
 int main(int argc, char** argv)
 {
+	
 	//Creating the GI
 	G4UIExecutive* ui = new G4UIExecutive(argc, argv);
 

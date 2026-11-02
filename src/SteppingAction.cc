@@ -1,12 +1,17 @@
 #include "SteppingAction.hh"
 #include "DetectorConstruction.hh"
 #include "EventAction.hh"
+#include "G4OpticalPhoton.hh"
+#include "G4AnalysisManager.hh"
+#include <iostream>
+#include <vector>
 
 #include "G4Step.hh"
 #include "G4LogicalVolume.hh"
 
 using namespace std;
 
+//Understand this part
 SteppingAction::SteppingAction(const DetectorConstruction* detectorConstruction,
     EventAction* eventAction)
     : G4UserSteppingAction(),
@@ -36,5 +41,22 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         fEventAction->AddEdep(edep);
         fEventAction->AddTrackLength(stepLength);
     }
+    //Getting the track info
+    G4Track* track = step->GetTrack();
+    vector<G4Double> timme;
+    //Is the tracked particle a photon and is it its first step?
+    if (track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() &&
+        track->GetCurrentStepNumber() == 1) 
+    {
+        //Geting the creation time of the photon
+        G4double creationTime = track->GetGlobalTime();
+        timme.push_back(creationTime);
+        //Declaring the object with DPS method
+        G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+        //Filling our histogram no 0
+        analysisManager->FillH1(0, creationTime);
+    }
+    cout << timme.min() << endl;
+    cout << timme.max() << endl;
 
 }
