@@ -27,12 +27,12 @@ void RunAction::BeginOfRunAction(const G4Run*)
     
     //Declaring the object with DPS method
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-
+    
     //Opening file
     analysisManager->OpenFile("photons_histogram.csv");
 
     //Creating a 1D Histogram with 100 bins between 0 and 950 ns
-    analysisManager->CreateH1("PhotonCreationTime", "Photon creation time:", 100, 0.0, 1000.0, "ns");
+    analysisManager->CreateH1("Photon energy distribution", "Photon energy distribution:", 500, 380.0, 500.0);
 }
 
 
@@ -42,5 +42,5 @@ void RunAction::EndOfRunAction(const G4Run*)
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
     //Writting and closing histogram
     analysisManager->Write();
-    analysisManager->CloseFile();
+    analysisManager->CloseFile(false);
 }

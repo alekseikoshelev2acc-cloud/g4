@@ -19,6 +19,7 @@
 #include <fstream>
 #include "G4OpticalSurface.hh"
 #include "G4LogicalSkinSurface.hh"
+#include "G4LogicalBorderSurface.hh"
 #include <vector>
 
 using namespace std;
@@ -39,13 +40,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     // Executing FindOrBuildMaterial for air (world)
     G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
-    /*
-    // Executing FindOrBuildMaterial for iron (target)
-    G4Material* target_mat = nist->FindOrBuildMaterial("G4_Fe");
-    */
-    //Defining our material
-
-    //G4Material* target_mat = nist->FindOrBuildMaterial("G4_PLASTIC_SCINTILLATOR");
+    
+    // Defining the detector
+    G4Material* det_mat = nist->FindOrBuildMaterial("G4_Si");
+    
+    //Defining our scintillator
+   
     G4int ncomponents, natoms;
     G4Element* elC = nist->FindOrBuildElement("C");
     G4Element* elH = nist->FindOrBuildElement("H");
@@ -53,6 +53,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4Material* target_mat = new G4Material("EJ-200",density,ncomponents=2);
     target_mat->AddElement(elH, natoms=10);
     target_mat->AddElement(elC, natoms=9);
+
+    //Defining light guide
+
+    G4Material* plexi = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
+
     //Importing plot data
     
     vector<G4double> wavelength;
@@ -102,12 +107,28 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     // Adding constant proprieties
 
     mpt->AddConstProperty("SCINTILLATIONYIELD", 100. / MeV);  // Photons per MeV (SET TO 10 000)
-    mpt->AddConstProperty("RESOLUTIONSCALE", 1.0);             // Used to calculate sigma for the Poisson's law
+    mpt->AddConstProperty("RESOLUTIONSCALE", 1.);             // Used to calculate sigma for the Poisson's law
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 2.1 * ns); // Caracteristic lifetime of an exited state
     
     //Adding proprieties to the scintillator
     
     target_mat->SetMaterialPropertiesTable(mpt);
+
+    //Adding refraction index to the light guide
+    G4MaterialPropertiesTable* mptplexi = new G4MaterialPropertiesTable();
+
+    vector<G4double> rindexplexi(photonEnergy.size(), 1.45);
+
+    mptplexi->AddProperty("RINDEX", photonEnergy, rindexplexi, photonEnergy.size());
+    plexi->SetMaterialPropertiesTable(mptplexi);
+    
+    //Adding refraction index to the detector
+    G4MaterialPropertiesTable* mptdet = new G4MaterialPropertiesTable();
+
+    vector<G4double> rindexdet(photonEnergy.size(), 3.5);
+
+    mptdet->AddProperty("RINDEX", photonEnergy, rindexdet, photonEnergy.size());
+    det_mat->SetMaterialPropertiesTable(mptdet);
 
     //Adding world volume props
     G4MaterialPropertiesTable* mptWorld = new G4MaterialPropertiesTable();
@@ -136,40 +157,54 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     );
 
     // Defining the target
-    G4double target_sizeX = 20.0 * cm;
-    G4double target_sizeY = 20.0 * cm;
+    G4double target_sizeX = 15.0 * cm;
+    G4double target_sizeY = 1.0 * cm;
     G4double target_sizeZ = 30.0 * cm;
 
     G4Box* solidTarget = new G4Box("Target", 0.5 * target_sizeX, 0.5 * target_sizeY, 0.5 * target_sizeZ);
 
     fLogicTarget = new G4LogicalVolume(solidTarget, target_mat, "TargetLV");
 
-//Definition of the aluminium reflective surface
-G4OpticalSurface* reflector = new G4OpticalSurface("reflector");
+    // Defining the trapezoid light guide
+    
+    //Exit rectangle width
+    G4double widthx = 5.0 * cm;
+    //Exit rectangle length
+    G4double lengthy = 1.0 * cm;
+    //Height of the trapezoid
+    G4double heightz = 14.0 * cm;
 
-//Unifed model for interactions of optical photons at a surface
-reflector->SetModel(unified);
-reflector->SetFinish(polished);
-reflector->SetType(dielectric_metal);
+    G4Trd* LightGuide = new G4Trd(
+    "LightGuide",
+    0.5 * target_sizeX,
+    0.5 * widthx,
+    0.5 * target_sizeY,
+    0.5 * lengthy,
+    0.5 * heightz       
+    );
+    //Logical light guide
+    G4LogicalVolume* logicLightGuide = new G4LogicalVolume(
+    LightGuide, 
+    plexi, 
+    "LogicLightGuide"
+    );
+    
+    //Detector physical volume
+    G4double det_sizeX = 5.0 * cm;
+    G4double det_sizeY = 1.0 * cm;
+    G4double det_sizeZ = 5.0 * cm;
 
-//Defining optical proprieties
+    G4Box* solidDetector = new G4Box("Detector", 0.5 * det_sizeX, 0.5 * det_sizeY, 0.5 * det_sizeZ);
 
-//Reflectivity is almost constant on our spectrum
-vector<G4double> reflectivity (photonEnergy.size(), 93);
-//Aluminium is opaque
-vector<G4double> efficiency (photonEnergy.size(), 0.);
-
-G4MaterialPropertiesTable* surfMPT = new G4MaterialPropertiesTable();
-surfMPT->AddProperty("REFLECTIVITY", photonEnergy, reflectivity);
-surfMPT->AddProperty("EFFICIENCY",   photonEnergy, efficiency);
-
-reflector->SetMaterialPropertiesTable(surfMPT);
-
-//Envellopping our scitillator
-new G4LogicalSkinSurface("TargetSkinSurface", fLogicTarget, reflector);
+    //Detector logical volume
+    G4LogicalVolume* logicDetector = new G4LogicalVolume(
+    solidDetector, 
+    det_mat, 
+    "LogicLightGuide"
+    );
 
     // Placement of target in World
-    new G4PVPlacement(
+    G4VPhysicalVolume* physScint = new G4PVPlacement(
         0,                     
         G4ThreeVector(0, 0, 0),  // center of the world
         fLogicTarget,           
@@ -179,6 +214,86 @@ new G4LogicalSkinSurface("TargetSkinSurface", fLogicTarget, reflector);
         0,                     
         true                  
     );
+    
+    // Placement of light guide alligned with the scintillator
 
+    //Position of the center of the light guide
+    G4double zPosition = 0.5 * target_sizeZ + 0.5 * heightz;
+
+    G4VPhysicalVolume* physLightGuide = new G4PVPlacement(
+         0,                                
+         G4ThreeVector(0, 0, zPosition),   
+         logicLightGuide,                 
+         "LightGuide",                 
+         logicWorld,                       
+         false, 
+         0, 
+         true                             
+         );
+
+    // Placement of detector alligned with the light guide
+    //Position of the center of the detector
+    G4double zPosition1 = 0.5 * target_sizeZ + heightz + 0.5 * det_sizeZ;
+
+    G4VPhysicalVolume* physDetector = new G4PVPlacement(
+         0,                                
+         G4ThreeVector(0, 0, zPosition1),   
+         logicDetector,                 
+         "Detector",                 
+         logicWorld,                       
+         false, 
+         0, 
+         true                             
+    );
+    
+
+    //Definition of the aluminium reflective surface
+    G4OpticalSurface* reflector = new G4OpticalSurface("reflector");
+
+    //Unifed model for interactions of optical photons at a surface
+    reflector->SetModel(unified);
+    reflector->SetFinish(polished);
+    reflector->SetType(dielectric_metal);
+
+    //Defining optical proprieties
+
+    //Reflectivity is almost constant on our spectrum
+    vector<G4double> reflectivity (photonEnergy.size(), 93);
+    //Aluminium is opaque
+    vector<G4double> efficiency (photonEnergy.size(), 0.);
+
+    G4MaterialPropertiesTable* surfMPT = new G4MaterialPropertiesTable();
+    surfMPT->AddProperty("REFLECTIVITY", photonEnergy, reflectivity);
+    surfMPT->AddProperty("EFFICIENCY",   photonEnergy, efficiency);
+
+    reflector->SetMaterialPropertiesTable(surfMPT);
+
+    //Envellopping our scitillator with G4LogicalBorderSurface
+    new G4LogicalBorderSurface(
+        "ScintToWorld",
+        physScint,        // original volume
+        physWorld,        // destination
+        reflector
+    );
+    
+    new G4LogicalBorderSurface(
+        "LightGuideToWorld",
+        physWorld,   
+        physScint,        
+        reflector
+    );
+    new G4LogicalBorderSurface(
+        "LightGuideToWorld",
+        physLightGuide,   
+        physWorld,        
+        reflector
+    );
+    new G4LogicalBorderSurface(
+        "LightGuideToWorld",
+        physWorld,  
+        physLightGuide,        
+        reflector
+    );
+    
     return physWorld;
 }

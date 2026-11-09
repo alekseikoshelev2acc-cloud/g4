@@ -584,6 +584,8 @@ CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4
 CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4Isotope.hh
 CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4IsotopeVector.hh
 CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4Log.hh
+CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4LogicalBorderSurface.hh
+CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4LogicalBorderSurface.icc
 CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4LogicalSkinSurface.hh
 CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4LogicalSkinSurface.icc
 CMakeFiles/handsonexample.dir/src/DetectorConstruction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4LogicalSurface.hh
@@ -1039,6 +1041,7 @@ CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4
 CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4ParticleDefinition.hh
 CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4ParticleDefinition.icc
 CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4ParticleMomentum.hh
+CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4PhysicalConstants.hh
 CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4PhysicsFreeVector.hh
 CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4PhysicsModelCatalog.hh
 CMakeFiles/handsonexample.dir/src/SteppingAction.cc.o: /home/geant4/geant4-v11.4.3-install/include/Geant4/G4PhysicsVector.hh

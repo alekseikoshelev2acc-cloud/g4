@@ -3,6 +3,7 @@
 #include "EventAction.hh"
 #include "G4OpticalPhoton.hh"
 #include "G4AnalysisManager.hh"
+#include "G4PhysicalConstants.hh"
 #include <iostream>
 #include <vector>
 
@@ -43,20 +44,21 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     }
     //Getting the track info
     G4Track* track = step->GetTrack();
-    vector<G4Double> timme;
     //Is the tracked particle a photon and is it its first step?
     if (track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() &&
         track->GetCurrentStepNumber() == 1) 
     {
         //Geting the creation time of the photon
-        G4double creationTime = track->GetGlobalTime();
-        timme.push_back(creationTime);
+        //G4double creationTime = track->GetGlobalTime();
+        //Getting the energy of the photon
+        G4double energy = track->GetKineticEnergy();
+        //Converting energy to wavelength
+        G4double wavelength = (h_Planck * c_light)*1000000. / energy;
+        cout << wavelength;
         //Declaring the object with DPS method
         G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
         //Filling our histogram no 0
-        analysisManager->FillH1(0, creationTime);
+        analysisManager->FillH1(0, wavelength);
     }
-    cout << timme.min() << endl;
-    cout << timme.max() << endl;
 
 }

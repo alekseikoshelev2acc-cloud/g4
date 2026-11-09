@@ -4,6 +4,7 @@
 #include "G4UIExecutive.hh"
 #include "G4OpticalPhysics.hh"
 #include "G4Scintillation.hh"
+#include "G4OpticalParameters.hh"
 #include <fstream>
 #include <cstdlib>
 
@@ -13,6 +14,10 @@
 #include "ActionInitialization.hh"
 
 using namespace std;
+
+//FOR CLASSES
+//Points if object 
+//Arrows if pointer to the object
 
 //arc and argv necessary for terminal execution
 int main(int argc, char** argv)
@@ -24,10 +29,14 @@ int main(int argc, char** argv)
 	//Creating default run manager
 	auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
-	//Ajout de l'optique
+	//Adding physics
 	auto* physicsList = new FTFP_BERT();
-	physicsList->RegisterPhysics(new G4OpticalPhysics());
+	G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
+    //Unenabling Cherenkov
+    G4OpticalParameters::Instance()->SetProcessActivation("Cerenkov", false);
 
+    physicsList->RegisterPhysics(opticalPhysics);
+	
 	//Setting geometry, physics and actioninitialisation
 	auto* detector = new DetectorConstruction();
 	runManager->SetUserInitialization(detector);
