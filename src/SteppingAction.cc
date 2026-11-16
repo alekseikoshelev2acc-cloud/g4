@@ -4,6 +4,7 @@
 #include "G4OpticalPhoton.hh"
 #include "G4AnalysisManager.hh"
 #include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
 #include <iostream>
 #include <vector>
 
@@ -45,20 +46,34 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     //Getting the track info
     G4Track* track = step->GetTrack();
     //Is the tracked particle a photon and is it its first step?
-    if (track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() &&
+    /*if (track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() &&
         track->GetCurrentStepNumber() == 1) 
     {
         //Geting the creation time of the photon
-        //G4double creationTime = track->GetGlobalTime();
+        G4double creationTime = track->GetGlobalTime();
         //Getting the energy of the photon
-        G4double energy = track->GetKineticEnergy();
+        //G4double energy = track->GetKineticEnergy();
         //Converting energy to wavelength
-        G4double wavelength = (h_Planck * c_light)*1000000. / energy;
-        cout << wavelength;
+        //G4double wavelength = (h_Planck * c_light)*1000000. / energy;
         //Declaring the object with DPS method
         G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
         //Filling our histogram no 0
-        analysisManager->FillH1(0, wavelength);
+        analysisManager->FillH1(0, creationTime);
     }
+    */
+   //Is the tracked particle a photon and does it hit the detector?
+   G4VPhysicalVolume* preVolume = step->GetPreStepPoint()->GetPhysicalVolume();
+   G4VPhysicalVolume* postVolume = step->GetPostStepPoint()->GetPhysicalVolume();
+   if (preVolume->GetName() == "LightGuide" && postVolume->GetName() == "Detector" && track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()) 
+      {
+            //Arrival time 
+            //G4double arrivalTime = track->GetGlobalTime() / ns;
+            //G4AnalysisManager::Instance()->FillH1(0, arrivalTime);
+            //Hit position
+            G4ThreeVector pos = track->GetPosition();
+            G4double x_cm = pos.x() / cm;
+            G4double y_cm = pos.y() / cm;
 
+            G4AnalysisManager::Instance()->FillH2(0, x_cm, y_cm);
+      }
 }

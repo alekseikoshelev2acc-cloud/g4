@@ -5,6 +5,7 @@
 #include "G4OpticalPhysics.hh"
 #include "G4Scintillation.hh"
 #include "G4OpticalParameters.hh"
+#include "G4ProcessTable.hh"
 #include <fstream>
 #include <cstdlib>
 

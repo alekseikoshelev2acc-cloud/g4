@@ -22,14 +22,14 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 	// Config of the particle
 	fParticleGun->SetParticleDefinition(particle);
 
-	// Config of the shooting dirG4ection
-	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
+	// Config of the shooting direction
+	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 1., 0.));
 
 	// Config of the muon's energy
-	fParticleGun->SetParticleEnergy(100 * MeV);
+	fParticleGun->SetParticleEnergy(100. * MeV);
 
 	// Placing the gun before the target
-	fParticleGun->SetParticlePosition(G4ThreeVector(0.0, 0.0, -1 * m));
+	fParticleGun->SetParticlePosition(G4ThreeVector(0.0, -4.0, 0.0 * m));
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()

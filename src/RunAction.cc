@@ -29,10 +29,20 @@ void RunAction::BeginOfRunAction(const G4Run*)
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
     
     //Opening file
-    analysisManager->OpenFile("photons_histogram.csv");
+    //analysisManager->OpenFile("photons_creation_time_1.1.csv");
+    analysisManager->OpenFile("photons_arrival_position.root");
 
     //Creating a 1D Histogram with 100 bins between 0 and 950 ns
-    analysisManager->CreateH1("Photon energy distribution", "Photon energy distribution:", 500, 380.0, 500.0);
+    //analysisManager->CreateH1("Photon creatiom time", "Photon creatiom time:", 1000, 0., 30.0);
+    //Arrival time histogram 
+    //analysisManager->CreateH1("ArrivalTime", "Photon arrival time:", 1000, 0., 30.);
+    //Positions 2D histogram
+    analysisManager->CreateH2(
+    "DetectorHitMap", 
+    "Detector hit map: ;X (cm);Y (cm)", 
+    100, -2.5, 2.5, 
+    20,  -0.5, 0.5
+);
 }
 
 
