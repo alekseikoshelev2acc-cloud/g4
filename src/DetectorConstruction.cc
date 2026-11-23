@@ -237,12 +237,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         //Rotation matrix
         G4RotationMatrix* rot = nullptr;
         //Z positions
-        G4double zScint1 = zScint;
         G4double zLG1    = zLG;
         G4double zDet1   = zDet;
         //Rotate of 180 around y if i even
         if (i % 2 == 0) {
-           zScint1=-zScint;
            zLG1=-zLG;
            zDet1=-zDet;
            rot = new G4RotationMatrix();
@@ -264,7 +262,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         //Placement of the i lightguide
         G4VPhysicalVolume* physLightGuide = new G4PVPlacement(
             rot,
-            G4ThreeVector(0, yPos, zLG),
+            G4ThreeVector(0, yPos, zLG1),
             logicLightGuide,
             "LightGuide",
             logicWorld,
@@ -276,7 +274,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         //Placement of the i Detector 
         G4VPhysicalVolume* physDetector = new G4PVPlacement(
             0,
-            G4ThreeVector(0, yPos, zDet),
+            G4ThreeVector(0, yPos, zDet1),
             logicDetector,
             "Detector",
             logicWorld,

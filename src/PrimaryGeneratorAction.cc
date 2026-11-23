@@ -4,6 +4,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
 using namespace std;
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
@@ -23,13 +24,10 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 	fParticleGun->SetParticleDefinition(particle);
 
 	// Config of the shooting direction
-	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 1., 0.));
-
-	// Config of the muon's energy
-	fParticleGun->SetParticleEnergy(100. * MeV);
+	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., -1., 0.));
 
 	// Placing the gun before the target
-	fParticleGun->SetParticlePosition(G4ThreeVector(0.0, -4.0, 0.0 * m));
+	fParticleGun->SetParticlePosition(G4ThreeVector(0. * cm, 9.0 * cm, 0. * cm));
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
@@ -41,5 +39,12 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 //Initialisation of the first step
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+	//Implementing flat energy spectrum between emin and emax
+	//Here because of the multithreaded mode
+	G4double emin = 20 * MeV;
+	G4double emax = 1000 * MeV;
+    G4double energy = emin + G4UniformRand() * (emax - emin);
+    fParticleGun->SetParticleEnergy(energy);
+	cout << "Muon energy: " << energy << endl;
 	fParticleGun->GeneratePrimaryVertex(anEvent);
 }

@@ -33,10 +33,12 @@
 #
 # Draw geometry:
 /vis/drawVolume
-#
 # Specify view angle:
 /vis/viewer/set/viewpointVector -1 0 0
 /vis/viewer/set/lightsVector -1 0 0
+#
+#Add axis
+/vis/scene/add/axes 0 0 0 10 cm
 #
 # Specify style (surface, wireframe, auxiliary edges,...)
 /vis/viewer/set/style wireframe
