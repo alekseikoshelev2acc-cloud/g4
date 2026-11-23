@@ -5,6 +5,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
+#include <cmath>
 using namespace std;
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
@@ -47,4 +48,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     fParticleGun->SetParticleEnergy(energy);
 	cout << "Muon energy: " << energy << endl;
 	fParticleGun->GeneratePrimaryVertex(anEvent);
+	//Implementing flat angle distibutiom between the inclination angle and the maximal angle
+	//Inclination angle 
+	G4double theta = 0;
+	//Max angle 
+	G4double Dtheta = sqrt(5);
 }
